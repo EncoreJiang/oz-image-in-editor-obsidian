@@ -9,6 +9,7 @@ import * as WidgetHandler from 'src/cm5/widgetHandler';
 import { isAnExcalidrawFile, excalidrawPluginIsLoaded } from 'src/util/excalidrawHandler';
 import { buildExtension } from 'src/cm6';
 import { getFileCmBelongsTo } from 'src/cm5/cm5Helper';
+import { format } from 'path';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
@@ -16,7 +17,7 @@ export default class OzanImagePlugin extends Plugin {
     imagePromiseList: Array<string> = [];
 
     async onload() {
-        console.log('Image in Editor Plugin is loaded');
+        console.log('Image in Editor Plugin is loaded 1');
 
         this.addSettingTab(new OzanImagePluginSettingsTab(this.app, this));
 
@@ -100,14 +101,45 @@ export default class OzanImagePlugin extends Plugin {
             }
 
             if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
-            if (!this.settings.renderAll) return;
             this.registerCodeMirror((cm: CodeMirror.Editor) => {
+                debugger
                 cm.on('change', this.codemirrorLineChanges);
+                console.log('..................')
                 this.handleInitialLoad(cm);
             });
+            if (!this.settings.renderAll) return;
             if (!this.settings.refreshImagesAfterChange) return;
             this.app.vault.on('modify', this.handleFileModify);
         }
+
+        this.registerMarkdownPostProcessor((element, context) => {
+            console.log('-------------')
+            const embeds = element.querySelectorAll("div.internal-embed");
+    
+            for (let index = 0; index < embeds.length; index++) {
+                const embed = embeds.item(index);
+                console.log(embed);
+                const src = embed.getAttr('src');
+                if(src) {
+                    if (src.startsWith('.attachments/')) {
+                        embed.className = "internal-embed image-embed is-loaded";
+                        const image = element.createEl('img');
+                        // this.app.vault.getResourcePath(this.app.vault.getAbstractFileByPath(context.sourcePath)[0])
+                        console.log("getAbstractFileByPath", this.app.vault.getAbstractFileByPath(context.sourcePath).path);
+                        image.src = 'file:///Users/jasonsjiang/Library/Mobile%20Documents/iCloud~md~obsidian/Documents/CS/Linux/' + src;
+                        // embed.innerHTML = '';
+                        embed.appendChild(image);
+                    }
+                }
+            // const codeblock = codeblocks.item(index);
+            // const text = codeblock.innerText.trim();
+            // const isEmoji = text[0] === ":" && text[text.length - 1] === ":";
+    
+            // if (isEmoji) {
+            //     context.addChild(new Emoji(codeblock, text));
+            // }
+            }
+        });
     }
 
     onunload() {
@@ -161,8 +193,11 @@ export default class OzanImagePlugin extends Plugin {
 
     // Only Triggered during initial Load
     handleInitialLoad = (cm: CodeMirror.Editor) => {
+        debugger
         var lastLine = cm.lastLine();
         var file = getFileCmBelongsTo(cm, this.app.workspace);
+        console.log(">>>>>>", file);
+        
         for (let i = 0; i < lastLine + 1; i++) {
             checkLine(cm, i, file, this);
         }

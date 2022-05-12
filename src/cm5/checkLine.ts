@@ -23,6 +23,7 @@ import { getFileCmBelongsTo } from 'src/cm5/cm5Helper';
 
 // Check Single Line
 export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, targetFile: TFile, plugin: OzanImagePlugin, changedFilePath?: string) => {
+    console.log("-----", lineNumber);
     // Get the Line edited
     const line = cm.lineInfo(lineNumber);
     if (line === null) return;
@@ -61,6 +62,8 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
 
         // Create Image
         const img = document.createElement('img');
+
+        console.log(filename);
 
         // Prepare the src for the Image
         if (linkInLine.result) {

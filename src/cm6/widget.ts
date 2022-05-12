@@ -36,7 +36,7 @@ interface ImageWidgetParams {
     filePath: string;
 }
 
-class ImageWidget extends WidgetType {
+export class ImageWidget extends WidgetType {
     readonly url: string;
     readonly altText: string;
     readonly filePath: string; // For Reload Check
@@ -53,6 +53,7 @@ class ImageWidget extends WidgetType {
     }
 
     toDOM() {
+        console.log("toDOM", this.url)
         const container = document.createElement('div');
         container.addClass('oz-image-widget-cm6');
         const image = container.createEl('img');

@@ -1,4 +1,4 @@
-import { statefulDecorations } from 'src/cm6/stateField';
+// import { statefulDecorations } from 'src/cm6/stateField';
 import { getViewPlugin } from 'src/cm6/viewPlugin';
 import OzanImagePlugin from 'src/main';
 
@@ -6,5 +6,6 @@ import OzanImagePlugin from 'src/main';
 export const buildExtension = (params: { plugin: OzanImagePlugin }) => {
     const { plugin } = params;
     const viewPlugin = getViewPlugin({ plugin });
-    return [viewPlugin, statefulDecorations.field];
+    return viewPlugin;
+    // return [viewPlugin, statefulDecorations.field];
 };

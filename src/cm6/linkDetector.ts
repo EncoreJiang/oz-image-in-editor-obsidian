@@ -5,7 +5,7 @@ import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
 export const transclusionTypes = ['file-transclusion', 'header-transclusion', 'blockid-transclusion'];
 
 export type TransclusionType = 'file-transclusion' | 'header-transclusion' | 'blockid-transclusion';
-export type ImageType = 'vault-image' | 'external-image' | 'excalidraw';
+export type ImageType = 'vault-image' | 'external-image' | 'excalidraw' | 'attachment-image';
 export type PdfType = 'pdf-link' | 'pdf-file';
 export type LinkType = 'iframe' | TransclusionType | ImageType | PdfType;
 
@@ -19,8 +19,9 @@ interface LinkMatch {
 }
 
 export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin: OzanImagePlugin }): LinkMatch | null => {
-    const { lineText, plugin, sourceFile } = params;
 
+    const { lineText, plugin, sourceFile } = params;
+    console.log("lineText:", lineText);
     // --> A. Internal Image Links
     // 1. [[ ]] format
     const internalImageWikiRegex = /!\[\[.*?(jpe?g|png|gif|svg|bmp).*?\]\]/;
@@ -137,6 +138,18 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
         const fileNameRegex = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
         const fileMatch = internalImageMdMatch[0].match(fileNameRegex);
         if (fileMatch) {
+            console.log("internalImage:", fileMatch)
+            if (fileMatch[0].startsWith(".attachments/")) {
+                const altRegex = /(?<=\[)(^$|.*)(?=\])/;
+                const altMatch = internalImageMdMatch[0].match(altRegex);
+                return {
+                    type: 'attachment-image',
+                    match: internalImageMdMatch[0],
+                    linkText: fileMatch[0],
+                    altText: altMatch ? altMatch[0] : '',
+                    blockRef: '',
+                };
+            }
             const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileMatch[0]), sourceFile.path);
             if (file) {
                 const altRegex = /(?<=\[)(^$|.*)(?=\])/;
