@@ -32,6 +32,7 @@ export default class OzanImagePlugin extends Plugin {
 
         // --> New Editor (CM6)
         if (this.settings.cm6RenderAll) {
+            console.log("registerEditorExtension----")
             const extension = buildExtension({ plugin: this });
             this.registerEditorExtension(extension);
         }

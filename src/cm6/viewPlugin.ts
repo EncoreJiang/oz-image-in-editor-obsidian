@@ -7,7 +7,7 @@ import { livePreviewActive } from 'src/util/obsidianHelper';
 // --> View Plugin
 export const getViewPlugin = (params: { plugin: OzanImagePlugin }): Extension => {
     const { plugin } = params;
-
+    console.log("ViewPlugin.fromClass:", ViewPlugin.fromClass)
     const imageViewPlugin = ViewPlugin.fromClass(
         class {
             decoManager: StatefulDecorationSet;
